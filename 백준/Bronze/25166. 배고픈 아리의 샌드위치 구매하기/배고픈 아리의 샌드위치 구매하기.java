@@ -19,18 +19,29 @@ public class Main {
 		}
 		
 		// 1.Integer.toBinaryString() 이용
-		String needToBit = Integer.toBinaryString(s-1023);
-		String mToBit = Integer.toBinaryString(m);
+//		String needToBit = Integer.toBinaryString(s-1023);
+//		String mToBit = Integer.toBinaryString(m);
+//		
+//		for(int i=1; i<=needToBit.length(); i++) {
+//			if(needToBit.charAt(needToBit.length()-i)=='1') {
+//				if(mToBit.charAt(mToBit.length()-i)=='0') {
+//					System.out.println("Impossible");
+//					return;
+//				}
+//			}
+//		}
+//		
+//		System.out.println("Thanks");
 		
-		for(int i=1; i<=needToBit.length(); i++) {
-			if(needToBit.charAt(needToBit.length()-i)=='1') {
-				if(mToBit.charAt(mToBit.length()-i)=='0') {
-					System.out.println("Impossible");
-					return;
-				}
-			}
+		
+		// 2. & 이용
+		int need = s-1023;
+		
+		if((need & m) == need) {
+			System.out.println("Thanks");
+		} else {
+			System.out.println("Impossible");
 		}
-		System.out.println("Thanks");
 		
 	}
 }
