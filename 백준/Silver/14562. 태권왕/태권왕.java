@@ -20,12 +20,12 @@ public class Main {
             int T = Integer.parseInt(st.nextToken());
 
             //2. bfs
-            System.out.println(BFS(new Comp(S, T, 0)));
+            System.out.println(bfs(new Comp(S, T, 0)));
 
         }
     }
 	
-    public static int BFS(Comp comp) {
+    public static int bfs(Comp comp) {
         Queue<Comp> q = new LinkedList<>();
         q.add(comp);
 
@@ -33,28 +33,30 @@ public class Main {
             Comp c = q.poll();
             int cnt = c.cnt;
             
-            if (c.S == c.T) { //같으면 횟수 출력
+            if (c.s == c.t) { //같으면 횟수 출력
                 return cnt;
             }
-            if (c.S > c.T) { //S가 커지면 해당 경우는 더 이상 확인하지 않음
+            if (c.s > c.t) { //S가 커지면 해당 경우는 더 이상 확인하지 않음
                 continue;
             }
             
-            q.add(new Comp(c.S +1, c.T, cnt+1));
-            q.add(new Comp(c.S *2, c.T +3, cnt+1));
+            q.add(new Comp(c.s +1, c.t, cnt+1));
+            q.add(new Comp(c.s *2, c.t +3, cnt+1));
         }
         return -1;
     }
     
     static class Comp {
-        int S;
-        int T;
+        int s;
+        int t;
         int cnt;
         
-        Comp (int S, int T, int cnt) {
-            this.S = S;
-            this.T = T;
+        Comp (int s, int t, int cnt) {
+            this.s = s;
+            this.t = t;
             this.cnt = cnt;
         }
     }
 }
+
+ 
