@@ -1,91 +1,70 @@
 import java.util.*;
 
-public class Solution {
-    public static void main(String[] args) {
-        String[][] array = {{"science", "12:40", "50"},
-                {"music", "12:20", "40"},
-                {"history", "14:00", "30"},
-                {"computer", "12:30", "100"}};
-        String[] res = solution(array);
-
-        for (String r : res) {
-            System.out.print(r);
+class Solution {
+    public String[] solution(String[][] plans) {
+        String[] answer = new String[plans.length];
+        int cnt = 0;
+         
+        /*1.init*/
+        List<Plan> list = new ArrayList<>();
+        for(int i=0; i<plans.length; i++){
+           list.add(new Plan(plans[i][0],plans[i][1],plans[i][2]));
         }
-    }
-
-    public static String[] solution(String[][] plans) {
-
-        ArrayList<String> answer = new ArrayList<>();
-
-        try {
-            List<Node> plan_list = new ArrayList<>();
-
-            for (String[] p : plans) {
-                String[] time = p[1].split(":");
-
-                plan_list.add(new Node(p[0], (Integer.parseInt(time[0])*60)+Integer.parseInt(time[1]),
-                        Integer.parseInt(p[2])));
+        
+        Collections.sort(list, (p1, p2) -> p1.start - p2.start);
+       
+        //2.과제 시작
+        Stack<Plan> wait = new Stack<>(); //멈춰둔 과제
+        
+        for(int i=0; i<list.size()-1; i++){
+            Plan curP = list.get(i);
+            Plan nextP = list.get(i+1);
+        
+            int timeDiff = nextP.start - curP.start;
+            
+            if(timeDiff < curP.remain) { //현 과제 종료불가 - 대기열 추가
+                curP.remain -= timeDiff;
+                wait.push(curP);
+                continue;
             }
-
-            plan_list.sort((h1, h2) -> h1.start - h2.start);
-
-            Stack<Node> stack = new Stack<>();
-
-            for (int i = 0; i < plan_list.size() - 1; i++) {
-                Node node = plan_list.get(i);
-                long t = node.start;
-                long t2 = plan_list.get(i + 1).start;
-
-                long diff = t2-t;
-
-                if (diff < node.playtime) {
-                    stack.push(new Node(node.name, node.playtime - diff));
-                } else if (diff > node.playtime) {
-                    answer.add(node.name);
-                    diff = diff - node.playtime;
-
-                    while (diff > 0 && !stack.empty()) {
-                        Node tmp = stack.pop();
-                        if (diff < tmp.playtime) {
-                            stack.push(new Node(tmp.name, tmp.playtime - diff));
-                            diff = 0;
-                        } else if (diff >= tmp.playtime) {
-                            answer.add(tmp.name);
-                            diff = diff - tmp.playtime;
-                        }
-                    }
-                } else {
-                    answer.add(node.name);
+            //현 과제 종료가능
+            answer[cnt++] = curP.name;
+            timeDiff -= curP.remain;
+            
+            // 과제 종료 후 남은 시간만큼 대기과제 진행
+            while(timeDiff > 0 && !wait.isEmpty()){
+                Plan tmp = wait.pop();
+                if(tmp.remain > timeDiff){
+                    tmp.remain -= timeDiff;
+                    wait.push(tmp);
+                    break;
                 }
+                answer[cnt++] = tmp.name;
+                timeDiff -= tmp.remain;
             }
-            answer.add(plan_list.get(plan_list.size() - 1).name);
-
-            while(!stack.empty()){
-                Node n = stack.pop();
-                answer.add(n.name);
-            }
-
-
-        } catch (Exception e) {
-            System.out.print(e);
         }
-        return answer.toArray(new String[answer.size()]);
+		answer[cnt++] = list.get(list.size()-1).name;
+        
+        //3.남은 과제들 최근에 멈춘 순으로 진행
+        while(!wait.isEmpty()){
+            answer[cnt++] = wait.pop().name;
+        }    
+        
+        //4.result
+        return answer;
     }
-}
-
-class Node {
-    String name;
-    int start;
-    long playtime;
-
-    Node(String name, int start, long playtime) {
-        this.name = name;
-        this.start = start;
-        this.playtime = playtime;
-    }
-
-    Node(String name, long playtime) {
-        this.name = name;
-        this.playtime = playtime;
+    
+    public class Plan {
+        String name;
+        int start;
+        int remain;
+        
+        Plan(String name, String start, String remain){
+            this.name = name;
+            String[] time = start.split(":");
+            this.start = Integer.parseInt(time[0])*60 + Integer.parseInt(time[1]);
+            this.remain = Integer.parseInt(remain);
+        }
+        
     }
 }
